@@ -1,0 +1,17 @@
+# Personal data: your profile database and resume stay on this machine.
+backend/data/
+*.db
+*.pdf
+.env
+
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS / editors
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/

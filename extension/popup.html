@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JobCopilot</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>body { width: 380px; padding: 12px; } </style>
+</head>
+<body>
+  <div class="stack">
+    <div class="row"><h1 style="margin:0; flex:1">JobCopilot</h1><span id="conn" class="pill">…</span></div>
+    <div id="alerts"></div>
+    <table>
+      <thead><tr><th>Platform</th><th>Today</th><th>Status</th></tr></thead>
+      <tbody id="platforms"></tbody>
+    </table>
+    <div id="session" class="muted"></div>
+    <div class="row">
+      <button id="start">Apply to All (Rapid Review)</button>
+      <button id="end" class="secondary" hidden>End session</button>
+    </div>
+    <div class="muted">Each listing opens pre-filled. <b>You</b> click Submit. <b>S</b> submitted → next · <b>K</b> skip · <b>E</b> edit.</div>
+    <div class="row"><button id="feeds" class="secondary">Check RSS feeds</button><button id="options" class="secondary">Profile &amp; settings</button></div>
+    <div id="msg" class="muted"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

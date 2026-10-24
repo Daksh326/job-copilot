@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>JobCopilot content-script harness</title></head>
+<body>
+  <!-- A fake Easy-Apply-style modal to exercise the filler and the guard. -->
+  <div class="jobs-easy-apply-modal" role="dialog">
+    <label for="fn">First name</label><input id="fn" type="text">
+    <label for="em">Email address</label><input id="em" type="email">
+    <label for="ph">Mobile phone number</label><input id="ph" type="tel" value="1112223333">
+    <label for="gy">Year of graduation</label><select id="gy"><option value="">Select</option><option>2025</option><option>2026</option></select>
+    <label for="cl">Cover letter</label><textarea id="cl"></textarea>
+    <label for="q1">Describe a project where you used Python and what you learned?</label><textarea id="q1"></textarea>
+    <label for="cv">Upload resume</label><input id="cv" type="file" accept=".pdf">
+    <label><input type="checkbox" id="terms"> I agree to the terms</label>
+    <label for="pw">Password</label><input id="pw" type="password">
+    <button id="next">Next</button>
+    <button id="submit">Submit application</button>
+  </div>
+  <div id="notices"></div>
+  <script src="../content/platforms.js"></script>
+  <script src="../content/guard.js"></script>
+  <script src="../content/filler.js"></script>
+  <script src="../content/overlay.js"></script>
+  <script>
+    "use strict";
+    const results = [];
+    const t = (name, cond) => results.push(`${cond ? "PASS" : "FAIL"} ${name}`);
+    const clicks = [];
+    document.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => clicks.push(b.id)));
+    const formSubmits = [];
+    document.addEventListener("submit", () => formSubmits.push(1), true);
+
+    const profile = { name: "Asha Verma", email: "asha@example.com", phone: "9876543210", graduation_year: 2026 };
+    const root = document.querySelector(".jobs-easy-apply-modal");
+    const plan = JC.filler.scan(root, profile);
+    t("cover letter detected", plan.cover.length === 1 && plan.cover[0].el.id === "cl");
+    t("open question detected", plan.questions.length === 1 && plan.questions[0].el.id === "q1");
+    t("password + terms left for the user", plan.manual.some((m) => m.el.id === "terms") && !JSON.stringify(plan.profile.map((p) => p.el.id)).includes("pw"));
+
+    const resume = { base64: btoa("%PDF-1.4 fake"), filename: "Asha_Verma.pdf" };
+    JC.filler.fillProfile(plan, profile, resume);
+    t("first name filled", document.getElementById("fn").value === "Asha");
+    t("email filled", document.getElementById("em").value === "asha@example.com");
+    t("prefilled phone NOT overwritten", document.getElementById("ph").value === "1112223333");
+    t("graduation year select set", document.getElementById("gy").value === "2026");
+    t("resume attached", document.getElementById("cv").files[0] && document.getElementById("cv").files[0].name === "Asha_Verma.pdf");
+    t("terms checkbox untouched", document.getElementById("terms").checked === false);
+    t("password untouched", document.getElementById("pw").value === "");
+
+    const q = plan.questions[0].label;
+    JC.filler.fillGenerated(plan, { cover_letter: "Tailored letter", answers: [{ question: q, answer: "Answer text" }], too_similar_fields: [q] });
+    t("cover letter pasted", document.getElementById("cl").value === "Tailored letter");
+    t("too-similar answer NOT pasted, marked blocked", document.getElementById("q1").value === "" && document.getElementById("q1").dataset.jcState === "blocked");
+
+    const { submit, next } = JC.filler.actionButtons(root);
+    JC.filler.highlight(submit, "submit"); JC.filler.highlight(next, "next");
+    t("submit found + highlighted", submit.length === 1 && submit[0].id === "submit" && submit[0].style.outline.includes("solid"));
+    t("next found + highlighted", next.length === 1 && next[0].id === "next");
+    t("NOTHING was clicked", clicks.length === 0 && formSubmits.length === 0);
+
+    const adapter = JC.platforms.adapters.linkedin;
+    t("guard: clean page passes", JC.guard.inspect("linkedin", adapter, { sessionActiveHere: false }) === null);
+    const note = document.getElementById("notices");
+    note.innerHTML = '<div role="alert">We\'ve noticed unusual activity on your account</div>';
+    const hit = JC.guard.inspect("linkedin", adapter, { sessionActiveHere: false });
+    t("guard: unusual activity -> stop", hit && hit.kind === "stop");
+    note.innerHTML = '<div role="alert">Something went wrong. Please try again later.</div>';
+    const err = JC.guard.inspect("linkedin", adapter, { sessionActiveHere: false });
+    t("guard: generic error -> error strike", err && err.kind === "error");
+    note.innerHTML = '<div class="grecaptcha-badge"><iframe src="https://www.google.com/recaptcha/api2/anchor?size=invisible" style="width:256px;height:60px"></iframe></div>';
+    t("guard: invisible reCAPTCHA badge ignored", JC.guard.inspect("linkedin", adapter, { sessionActiveHere: false }) === null);
+    note.innerHTML = '<iframe src="https://www.google.com/recaptcha/api2/anchor?k=x" style="width:304px;height:78px"></iframe>';
+    const cap = JC.guard.inspect("linkedin", adapter, { sessionActiveHere: false });
+    t("guard: visible reCAPTCHA -> stop", cap && cap.kind === "stop" && /CAPTCHA/.test(cap.detail));
+    note.innerHTML = "";
+
+    window.__results = results;
+    document.title = results.every((r) => r.startsWith("PASS")) ? "ALL PASS" : "FAILURES";
+  </script>
+</body>
+</html>

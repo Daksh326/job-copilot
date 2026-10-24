@@ -1,0 +1,32 @@
+:root {
+  --bg: #ffffff; --fg: #0f172a; --muted: #64748b; --line: #e2e8f0; --soft: #f8fafc;
+  --ok: #166534; --ok-bg: #dcfce7; --bad: #991b1b; --bad-bg: #fee2e2; --warn: #92400e; --warn-bg: #fef3c7;
+  --accent: #0f172a; --accent-fg: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220; --fg: #e2e8f0; --muted: #94a3b8; --line: #1e293b; --soft: #111a2e;
+    --ok: #86efac; --ok-bg: #052e16; --bad: #fca5a5; --bad-bg: #450a0a; --warn: #fcd34d; --warn-bg: #422006;
+    --accent: #e2e8f0; --accent-fg: #0f172a;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+body.center { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+h1 { font-size: 18px; margin: 0 0 8px; } h2 { font-size: 15px; margin: 0 0 8px; }
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px; max-width: 760px; width: 100%; }
+.muted { color: var(--muted); font-size: 12px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 8px; padding: 7px 12px; background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+button.secondary { background: var(--soft); color: var(--fg); border: 1px solid var(--line); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+input, textarea { font: inherit; color: var(--fg); background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; width: 100%; }
+textarea { font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; }
+td, th { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--soft); }
+.ok { background: var(--ok-bg); color: var(--ok); } .bad { background: var(--bad-bg); color: var(--bad); } .warn { background: var(--warn-bg); color: var(--warn); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.stack { display: grid; gap: 12px; }
+.alert { padding: 10px 12px; border-radius: 8px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+.note { padding: 8px 10px; border-radius: 8px; background: var(--warn-bg); color: var(--warn); }

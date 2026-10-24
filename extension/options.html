@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JobCopilot settings</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>body { padding: 16px; } main { max-width: 820px; margin: 0 auto; } section.card { margin-bottom: 14px; }</style>
+</head>
+<body>
+<main class="stack">
+  <h1>JobCopilot settings</h1>
+
+  <section class="card stack">
+    <h2>Backend</h2>
+    <div class="row"><input id="backendUrl" placeholder="http://127.0.0.1:8765" style="flex:1"><button id="saveBackend">Save</button></div>
+    <div id="backendMsg" class="muted"></div>
+  </section>
+
+  <section class="card stack">
+    <h2>Profile</h2>
+    <div class="muted">Used to fill forms, check eligibility (graduation year, degree, location, work mode) and write answers. Only facts in here are used.</div>
+    <textarea id="profile" rows="26" spellcheck="false"></textarea>
+    <div class="row"><button id="saveProfile">Save profile</button><span id="profileMsg" class="muted"></span></div>
+    <div class="row"><input type="file" id="resume" accept="application/pdf" style="flex:1"><button id="uploadResume" class="secondary">Upload resume PDF</button><span id="resumeMsg" class="muted"></span></div>
+  </section>
+
+  <section class="card stack">
+    <h2>Safety limits</h2>
+    <div class="muted">These defaults keep accounts safe. You can raise caps, but you'll be warned. Gap, fit score and company cooldown can only be made stricter.</div>
+    <table><thead><tr><th>Platform</th><th>Per day</th><th>Per hour</th><th>Safe default</th></tr></thead><tbody id="limitRows"></tbody></table>
+    <div class="row">
+      <label>Total per day <input id="totalDaily" type="number" min="0" style="width:90px"></label>
+      <label>Min gap (s) <input id="minGap" type="number" min="60" style="width:90px"></label>
+      <label>Min fit score <input id="minFit" type="number" min="55" max="100" style="width:90px"></label>
+      <label>Company cooldown (days) <input id="cooldown" type="number" min="30" style="width:90px"></label>
+    </div>
+    <div id="limitWarnings"></div>
+    <div class="row"><button id="saveLimits">Save limits</button><button id="confirmLimits" class="secondary" hidden>I understand the risk, save anyway</button><span id="limitMsg" class="muted"></span></div>
+  </section>
+
+  <section class="card stack">
+    <h2>Passive sources</h2>
+    <div class="muted">RSS feeds are fetched at most once every 6 hours. Job-alert emails: paste the email (HTML or text) and job links are pulled out.</div>
+    <div class="row"><input id="feedUrl" placeholder="https://… RSS feed URL" style="flex:1"><button id="addFeed" class="secondary">Add feed</button></div>
+    <ul id="feeds" class="muted"></ul>
+    <textarea id="email" rows="6" placeholder="Paste a job-alert email here"></textarea>
+    <div class="row"><button id="importEmail" class="secondary">Import links from email</button><span id="emailMsg" class="muted"></span></div>
+  </section>
+
+  <section class="card stack">
+    <h2>Applications (last 30 days)</h2>
+    <table><thead><tr><th>When</th><th>Platform</th><th>Role</th><th>How logged</th></tr></thead><tbody id="apps"></tbody></table>
+  </section>
+</main>
+<script src="options.js"></script>
+</body>
+</html>
